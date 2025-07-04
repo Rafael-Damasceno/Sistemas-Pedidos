@@ -5,7 +5,13 @@ from class_produto import Produto
 
 from datetime import datetime
 
-def menu_principal():  # MENU PRINCIPAL
+def menu_principal():  
+    """
+    Exibe o menu principal com opções para o usuário interagir com o sistema.
+
+    Returns:
+        str: A opção escolhida pelo usuário.
+    """
     print('''
         MENU Principal:
         [1] - Controle de vendas
@@ -17,6 +23,12 @@ def menu_principal():  # MENU PRINCIPAL
     return str(input('Escolha uma opção: '))
 
 def menu_pedido():
+    """
+    Exibe o menu de controle de vendas com opções relacionadas a pedidos.
+
+    Returns:
+        str: A opção escolhida pelo usuário.
+    """
     print('''
         MENU Vendas:
         [1] - Abrir novo pedido
@@ -29,6 +41,13 @@ def menu_pedido():
     return str(input('Escolha uma opção: '))
 
 def pedido_adicionar():
+    """
+    Cria um novo pedido com um endereço fornecido pelo usuário.
+
+    Returns:
+        Pedido: Um objeto da classe Pedido com código gerado automaticamente.
+    """
+
     # código pedido gerado automaticamente
     endereco_pedido = cadastrar_endereco()
     # a numeração do pedido começa de 1 até n
@@ -36,6 +55,15 @@ def pedido_adicionar():
     return Pedido(codido_pedido, endereco_pedido)
 
 def pedido_adicionar_item():
+    """
+    Adiciona um item a um pedido existente, solicitando o código do pedido, 
+    código do produto e a quantidade. 
+    Exibe mensagens de erro caso o pedido ou produto não existam.
+
+    Returns:
+        bool: False se o pedido não existir. None caso contrário.
+    """
+
     int_pedido_selecionado = int(input('Informe o código do pedido para adicionar um novo item: '))
     if buscar_pedido_por_codigo(int_pedido_selecionado):
         # verificar se pedido existe
@@ -54,6 +82,14 @@ def pedido_adicionar_item():
         return False
     
 def pedido_remover_item():
+    """
+    Remove um item de um pedido existente, solicitando o código do pedido 
+    e o número do item.
+
+    Returns:
+        bool: False se o pedido não existir. None caso contrário.
+    """
+
     int_pedido_selecionado = int(input('Informe o código do pedido para remover um item selecionado: '))
     if buscar_pedido_por_codigo(int_pedido_selecionado):
         # verificar se pedido existe
@@ -67,6 +103,13 @@ def pedido_remover_item():
         return False
     
 def pedido_listar_items():
+    """
+    Lista os detalhes de todos os itens de um pedido selecionado.
+
+    Returns:
+        bool: False se o pedido não existir. None caso contrário.
+    """
+
     int_pedido_selecionado = int(input('Informe o código do pedido para mais detalhes: '))
     if buscar_pedido_por_codigo(int_pedido_selecionado):
         # verificar se pedido existe
@@ -77,6 +120,13 @@ def pedido_listar_items():
         return False
     
 def cadastrar_endereco():
+    """
+    Solicita os dados de endereço ao usuário e cria um objeto Endereco.
+
+    Returns:
+        Endereco: Objeto contendo os dados informados pelo usuário.
+    """
+
     str_cep = str(input('Informe o cep do endereço: '))
     str_rua = str(input('Informe a rua: '))
     int_num = int(input('Informe o número: '))
@@ -88,6 +138,13 @@ def cadastrar_endereco():
     return endereco
 
 def cadastrar_produto():
+    """
+    Solicita os dados do produto ao usuário e cria um objeto Produto.
+
+    Returns:
+        Produto: Objeto contendo os dados do produto.
+    """
+
     int_codigo = int(input('Informe o código identificador do produto: '))
     str_nome = str(input('Qual o nome/descrição do produto? '))
     flt_preco = float(input('Informe o valor (ex. 0.00): '))
@@ -96,12 +153,27 @@ def cadastrar_produto():
     return Produto(int_codigo, str_nome, flt_preco, date_validade)
 
 def remover_produto():
+    """
+    Remove um produto do dicionário de estoque com base no código informado
+    pelo usuário. Exibe mensagem com a descrição do produto removido.
+    """
+
     int_codigo_remocao = int(input('Informe o código do produto para remoção: '))
     produto_remover = estoque_produtos[int_codigo_remocao]
     print("Produto (" + produto_remover._descricao + ") removido!") 
     del estoque_produtos[int_codigo_remocao]
 
 def buscar_produto_por_codigo(int_codigo_produto):
+    """
+    Busca um produto no dicionário de estoque com base no código informado.
+
+    Args:
+        int_codigo_produto (int): Código do produto a ser buscado.
+
+    Returns:
+        Produto | bool: O objeto Produto encontrado ou False se não existir.
+    """
+
     # Verifica se existe produto cadastrado
     for chave in estoque_produtos.keys():
         if chave == int_codigo_produto:
@@ -109,15 +181,23 @@ def buscar_produto_por_codigo(int_codigo_produto):
     return False
 
 def buscar_pedido_por_codigo(int_codigo_pedido):
+    """
+    Busca um pedido no dicionário de pedidos com base no código informado.
+
+    Args:
+        int_codigo_pedido (int): Código do pedido a ser buscado.
+
+    Returns:
+        Pedido | bool: O objeto Pedido encontrado ou False se não existir.
+    """
+
     # Verifica se existe produto cadastrado
     for chave in pedidos.keys():
         if chave == int_codigo_pedido:
             return pedidos[int_codigo_pedido]
     return False
 
-# Aplicação de exemplo disciplina POO - UFRB
-# Sistema de controle de pedidos
-# Professor Guilherme Braga Araújo
+
 
 estoque_produtos = {}
 pedidos = {}
