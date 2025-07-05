@@ -2,10 +2,12 @@
 class Pedido:
     # definicão do construtor
     # em python podemos criar os atributos classe pelo construtor
-    def __init__(self, codido_pedido, endereco_entrega):
-        self.__codigo_pedido = codido_pedido
-        self.__endereco_entrega = endereco_entrega
+    def __init__(self, codigo_pedido, cliente_pedido, tipo_entrega, local):
+        self.__codigo_pedido = codigo_pedido
+        self.__cliente_pedido = cliente_pedido
         self.__status = 0  # 0 = aberto, 1 = finalizado/pago
+        self.__tipo_entrega = tipo_entrega
+        self.__local = local
         # criando uma estrutura map em python para armzenar itens do pedido
         self.__itens_pedidos = []
 
@@ -26,12 +28,28 @@ class Pedido:
         self.__codigo_pedido = value
 
     @property
-    def _endereco_entrega(self):
-        return self.__endereco_entrega
+    def _cliente_pedido(self):
+        return self.__cliente_pedido
 
-    @_endereco_entrega.setter
-    def _endereco_entrega(self, value):
-        self.__endereco_entrega = value
+    @_cliente_pedido.setter
+    def _cliente_pedido(self, value):
+        self.__cliente_pedido = value
+
+    @property
+    def _tipo_entrega(self):
+        return self.__tipo_entrega
+
+    @_tipo_entrega.setter
+    def _tipo_entrega(self, value):
+        self.__tipo_entrega = value        
+
+    @property
+    def _local(self):
+        return self.__local
+
+    @_local.setter
+    def _local(self, value):
+        self.__local = value   
 
     @property
     def _itens_pedidos(self):
@@ -51,38 +69,21 @@ class Pedido:
         return int(len(self.__itens_pedidos))
         # return self.__itens_pedidos.__sizeof__
 
+       # 🔽 Novo método público que retorna o preço total
+    def calcular_preco_total(self):
+        return sum(item._preco_item for item in self.__itens_pedidos)   
+
     def toString(self):
-        str_line = "** INÍCIO DAS INFORMAÇÕES DO PEDIDO **"
-        print(str_line, end='\n')
-        str_line = "CÓDIGO DO PEDIDO:" + str(self._codigo_pedido)
-        print(str_line, end='\t')
-        str_line = "STATUS DO PEDIDO:" + \
-            str(self._status)  # (0-aberto | 1-finalizado)
-        print(str_line, end='\n')
-        str_line = "CEP ENDEREÇO PARA ENTREGA:" + \
-            str(self._endereco_entrega._cep)
-        print(str_line, end='\t')
-        str_line = "RUA:" + str(self._endereco_entrega._rua)
-        print(str_line, end='\t')
-        str_line = "BAIRRO/CIDADE PARA ENTREGA:" + \
-            str(self._endereco_entrega._bairro) + "/" + \
-            str(self._endereco_entrega._cidade)
-        print(str_line, end='\n')
-        str_line = "QUANTIDADE DE ITENS DO PEDIDO:" + \
-            str(self.quantidade_itens_pedido())
-        print(str_line, end='\n')
-        dbl_preco_total = 0.0
+        print("** INÍCIO DAS INFORMAÇÕES DO PEDIDO **")
+        print("CÓDIGO DO PEDIDO:", self._codigo_pedido, end='\t')
+        print("STATUS DO PEDIDO:", self._status)
+        print("QUANTIDADE DE ITENS DO PEDIDO:", self.quantidade_itens_pedido())
+
         for i, item in enumerate(self._itens_pedidos):
-            str_line = "\t #ITEM:" + str(i)
-            print(str_line, end='\t')
-            str_line = "PRODUTO:" + str(item._produto._descricao)
-            print(str_line, end='\t')
-            str_line = "QTD (#):" + str(item._quantidade)
-            print(str_line, end='\t')
-            str_line = "SUBTOTAL (R$):" + str(item._preco_item)
-            dbl_preco_total += item._preco_item
-            print(str_line, end='\n')
-        str_line = "PREÇO TOTAL DO PEDIDO:" + str(dbl_preco_total)
-        print(str_line, end='\n')
-        str_line = "** FIM DAS INFORMAÇÕES DO PEDIDO **"
-        print(str_line, end='\n')
+            print(f"\t #ITEM: {i}", end='\t')
+            print("PRODUTO:", item._produto._descricao, end='\t')
+            print("QTD (#):", item._quantidade, end='\t')
+            print("SUBTOTAL (R$):", item._preco_item)
+
+        print("PREÇO TOTAL DO PEDIDO:", self.calcular_preco_total())
+        print("** FIM DAS INFORMAÇÕES DO PEDIDO **")

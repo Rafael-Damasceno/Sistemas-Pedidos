@@ -2,6 +2,10 @@ from class_endereco import Endereco
 from class_item_pedido import ItemPedido
 from class_pedido import Pedido
 from class_produto import Produto
+from class_cliente import Cliente
+from class_mesa import Mesa
+from class_funcionario import Funcionario
+from class_nota_fiscal import NotaFiscal
 
 from datetime import datetime
 
@@ -18,6 +22,7 @@ def menu_principal():
         [2] - Cadastrar novo produto
         [3] - Remover um produto
         [4] - Pesquisar um produto
+        [5] - Cadastrar funcionário
         [s] - Sair
     ''')
     return str(input('Escolha uma opção: '))
@@ -31,10 +36,10 @@ def menu_pedido():
     """
     print('''
         MENU Vendas:
-        [1] - Abrir novo pedido
+        [1] - Abrir novo pedido 
         [2] - Adicionar item ao pedido
         [3] - Remover item do pedido
-        [4] - Listar itens do pedido em detalhes
+        [4] - Listar itens do pedido
         [5] - Finalizar pedido e imprimir
         [s] - Sair
     ''')
@@ -47,12 +52,34 @@ def pedido_adicionar():
     Returns:
         Pedido: Um objeto da classe Pedido com código gerado automaticamente.
     """
+    # Gera o código do pedido automaticamente com base na quantidade atual de pedidos
+    codido_pedido = len(pedidos) + 1
 
-    # código pedido gerado automaticamente
-    endereco_pedido = cadastrar_endereco()
-    # a numeração do pedido começa de 1 até n
-    codido_pedido = int(len(pedidos)) + 1
-    return Pedido(codido_pedido, endereco_pedido)
+    # Cadastra o cliente
+    cliente_pedido = cadastrar_cliente()
+
+    # Escolha da modalidade de entrega
+    print('''
+        Escolha a modalidade de entrega:
+        [1] - Presencial
+        [2] - Entrega
+    ''')
+    opcao = input('Escolha uma opção: ')
+
+    if opcao == "1":
+        local = cadastrar_mesa() 
+        tipo_entrega = "Presencial"
+
+    elif opcao == "2":
+        local = cadastrar_endereco()
+        tipo_entrega = "Entrega"    
+
+    else:
+        print("Opção inválida. Pedido não será criado.")
+        return None
+
+    return Pedido(codido_pedido, cliente_pedido, tipo_entrega, local)
+
 
 def pedido_adicionar_item():
     """
@@ -118,7 +145,30 @@ def pedido_listar_items():
     else:
         print("Pedido inexistente")
         return False
+
+
+
+def cadastrar_cliente():
+    """
+    Solicita os dados do usuario e cria um objeto cliente.
+
+    Returns:
+        Cliente: Objeto contendo os dados informados pelo usuário.
+    """
+
+    str_nome = str(input('Informe o nome do cliente: '))
+    int_telefone = int(input('Informe o telefone do cliente: '))
     
+    cliente = Cliente(str_nome, int_telefone,)
+    return cliente
+
+
+def cadastrar_mesa():
+
+    int_numero_mesa = int(input('Informe o número da mesa: '))
+    mesa = Mesa(int_numero_mesa)
+    return mesa
+
 def cadastrar_endereco():
     """
     Solicita os dados de endereço ao usuário e cria um objeto Endereco.
@@ -150,7 +200,8 @@ def cadastrar_produto():
     flt_preco = float(input('Informe o valor (ex. 0.00): '))
     date_validade = (input('Informe a validade do produto (formato dd/mm/aaaa): '))
     date_validade = datetime.strptime(date_validade, '%d/%m/%Y')
-    return Produto(int_codigo, str_nome, flt_preco, date_validade)
+    int_quantidade = int(input('Informe a quantidade do produto: '))
+    return Produto(int_codigo, str_nome, flt_preco, date_validade, int_quantidade)
 
 def remover_produto():
     """
@@ -198,6 +249,30 @@ def buscar_pedido_por_codigo(int_codigo_pedido):
     return False
 
 
+def cadastrar_funcionario():
+
+    str_nome = str(input('Qual o nome do funcionário: '))
+    int_telefone = int(input('Informe o telefone do funcionário: '))
+    float_salario = float(input('Informe o salário do funcionário: '))
+    str_funcao = str(input('Informe a função do funcionário: '))
+    return Funcionario(str_nome, int_telefone, float_salario, str_funcao)
+
+    
+def emitir_nota_fiscal():
+    int_codigo_pedido = int(input('Digite o código do pedido: '))
+    pedido = buscar_pedido_por_codigo(int_codigo_pedido)
+    
+    if not pedido:
+        print("Pedido não encontrado.")
+        return None
+
+    precoFinal = pedido.calcular_preco_total()  # <-- agora sim
+    data = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+    
+    nota = NotaFiscal(int_codigo_pedido, precoFinal, data)
+    print(f"Nota Fiscal emitida para o pedido {int_codigo_pedido} no valor de R$ {precoFinal:.2f}")
+    return nota
+
 
 estoque_produtos = {}
 pedidos = {}
@@ -226,8 +301,8 @@ while True:
                 pedido_remover_item()
             elif (opcao_escolhida == "4"):
                 pedido_listar_items()
-            #elif (opcao_escolhida == "5"):
-                #pedido_finalizar()
+            elif (opcao_escolhida == "5"):
+                emitir_nota_fiscal()
             else:
                 # Volta para o menu principal
                 break
@@ -251,7 +326,12 @@ while True:
             print(">Descricao=" + produto_pesquisa._descricao)
             print(">Valor=" + str(produto_pesquisa._preco))
             print(">Validade=" + str(produto_pesquisa._validade))
+            print(">Quantidade=" + str(produto_pesquisa._quantidade))
         else:
             print("Produto nâo cadastrado/encontrado.")
+
+    # opc 5
+    elif (opcao_escolhida == "5"):
+        funcionario = cadastrar_funcionario()
     else:
         print("A opção escolhida é inválida.")
