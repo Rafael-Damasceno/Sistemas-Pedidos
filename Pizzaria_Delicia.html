@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pizzaria Delícia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+            max-width: 800px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+        }
+
+        .btn-custom {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h4 {
+            color: orange;
+        }
+
+        .form-control {
+            background-color: #fff8dc;
+            border: none;
+            color: #000;
+        }
+
+        .form-control::placeholder {
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="menuPrincipal" class="card">
+            <h1 style="font-family: 'Pacifico', cursive; color: orange; text-align: center;">Pizzaria Delícia</h1>
+            <p style="font-size: 1.0rem; color: rgb(255, 255, 255); text-align: center;">Sistema de Vendas</p>
+            <h4>Menu Principal</h4>
+            <button class="btn btn-warning btn-custom" onclick="mostrar('controleVendas')">🍕 Controle de
+                vendas</button>
+            <button class="btn btn-success btn-custom" onclick="mostrar('cadastrarProduto')">📦 Cadastrar novo
+                produto</button>
+            <button class="btn btn-danger btn-custom" onclick="mostrar('removerProduto')">🗑️ Remover um
+                produto</button>
+            <button class="btn btn-info btn-custom" onclick="mostrar('pesquisarProduto')">🔍 Pesquisar um
+                produto</button>
+            <button class="btn btn-primary btn-custom" onclick="mostrar('cadastrarFuncionario')">🧑‍💼 Cadastrar
+                funcionário</button>
+        </div>
+
+        <div id="controleVendas" class="card hidden">
+            <h4>Menu Vendas</h4>
+            <button class="btn btn-warning btn-custom" onclick="mostrar('novoPedido')">🍽️ Abrir novo
+                pedido</button>
+            <button class="btn btn-success btn-custom" onclick="mostrar('adicionarItem')">➕ Adicionar item
+                ao pedido</button>
+            <button class="btn btn-danger btn-custom" onclick="mostrar('removerItem')">❌ Remover item do
+                pedido</button>
+            <button class="btn btn-info btn-custom" onclick="mostrar('listarItens')">📋 Listar itens do
+                pedido</button>
+            <button class="btn btn-primary btn-custom" onclick="mostrar('emitirNota')">🧾 Finalizar pedido e
+                imprimir</button>
+            <button class="btn btn-secondary btn-custom" onclick="voltarMenu()">🔙 Voltar</button>
+        </div>
+
+        <!-- NOVO PEDIDO -->
+        <div id="novoPedido" class="card hidden">
+            <h4>Abrir Novo Pedido</h4>
+            <input id="nomeCliente" class="form-control mb-2" placeholder="Nome do Cliente">
+            <input id="telefoneCliente" class="form-control mb-2" placeholder="Telefone">
+            <select id="tipoEntrega" class="form-control mb-2" onchange="alternarEntrega()">
+                <option value="">Tipo de entrega</option>
+                <option value="Presencial">Presencial</option>
+                <option value="Entrega">Entrega</option>
+            </select>
+            <div id="entregaPresencial" class="hidden">
+                <input id="numeroMesa" type="number" class="form-control mb-2" placeholder="Número da Mesa">
+            </div>
+            <div id="entregaEndereco" class="hidden">
+                <input id="cep" class="form-control mb-2" placeholder="CEP">
+                <input id="rua" class="form-control mb-2" placeholder="Rua">
+                <input id="numero" type="number" class="form-control mb-2" placeholder="Número">
+                <input id="complemento" class="form-control mb-2" placeholder="Complemento">
+                <input id="bairro" class="form-control mb-2" placeholder="Bairro">
+                <input id="cidade" class="form-control mb-2" placeholder="Cidade">
+            </div>
+            <button class="btn btn-success btn-custom" onclick="abrirPedido()">Salvar Pedido</button>
+            <button class="btn btn-secondary btn-custom" onclick="mostrar('controleVendas')">Voltar</button>
+        </div>
+
+        <!-- ADICIONAR ITEM -->
+        <div id="adicionarItem" class="card hidden">
+            <h4>Adicionar Item ao Pedido</h4>
+            <input id="pedidoItemCod" type="number" class="form-control mb-2" placeholder="Código do Pedido">
+            <input id="produtoItemCod" type="text" class="form-control mb-2" placeholder="Código do Produto">
+            <input id="produtoItemQtd" type="number" class="form-control mb-2" placeholder="Quantidade">
+            <button class="btn btn-success btn-custom" onclick="adicionarItem()">Adicionar</button>
+            <button class="btn btn-secondary btn-custom" onclick="mostrar('controleVendas')">Voltar</button>
+        </div>
+
+        <!-- REMOVER ITEM -->
+        <div id="removerItem" class="card hidden">
+            <h4>Remover Item do Pedido</h4>
+            <input id="pedidoRemItemCod" type="number" class="form-control mb-2" placeholder="Código do Pedido">
+            <input id="itemRemIndex" type="number" class="form-control mb-2" placeholder="Índice do Item">
+            <button class="btn btn-danger btn-custom" onclick="removerItem()">Remover</button>
+            <button class="btn btn-secondary btn-custom" onclick="mostrar('controleVendas')">Voltar</button>
+        </div>
+
+        <!-- LISTAR ITENS -->
+        <div id="listarItens" class="card hidden">
+            <h4>Listar Itens do Pedido</h4>
+            <input id="pedidoListarCod" type="number" class="form-control mb-2" placeholder="Código do Pedido">
+            <button class="btn btn-info btn-custom" onclick="listarItens()">Listar</button>
+            <div id="listaItensResultado" class="mt-3"></div>
+            <button class="btn btn-secondary btn-custom" onclick="mostrar('controleVendas')">Voltar</button>
+        </div>
+
+        <!-- EMITIR NOTA -->
+        <div id="emitirNota" class="card hidden">
+            <h4>Emitir Nota Fiscal</h4>
+            <input id="codigoPedidoNota" type="number" class="form-control mb-2" placeholder="Código do Pedido">
+            <button class="btn btn-warning btn-custom" onclick="emitirNotaFiscal()">Emitir Nota</button>
+            <button class="btn btn-secondary btn-custom" onclick="mostrar('controleVendas')">Voltar</button>
+        </div>
+
+        <!-- CADASTRO DE PRODUTO -->
+        <div id="cadastrarProduto" class="card hidden">
+            <h4>Cadastrar Produto</h4>
+            <input id="codigoProduto" class="form-control mb-2" placeholder="Código">
+            <input id="descricaoProduto" class="form-control mb-2" placeholder="Descrição">
+            <input id="precoProduto" type="number" class="form-control mb-2" placeholder="Preço">
+            <input id="validadeProduto" type="date" class="form-control mb-2">
+            <input id="quantidadeProduto" type="number" class="form-control mb-2" placeholder="Quantidade">
+            <button class="btn btn-success btn-custom" onclick="salvarProduto()">Salvar Produto</button>
+            <button class="btn btn-secondary btn-custom" onclick="mostrar('menuPrincipal')">Voltar</button>
+        </div>
+
+        <!-- REMOVER PRODUTO -->
+        <div id="removerProduto" class="card hidden">
+            <h4>Remover Produto</h4>
+            <input id="codigoRemover" class="form-control mb-2" placeholder="Código">
+            <button class="btn btn-danger btn-custom" onclick="removerProduto()">Remover</button>
+            <button class="btn btn-secondary btn-custom" onclick="mostrar('menuPrincipal')">Voltar</button>
+        </div>
+
+        <!-- PESQUISAR PRODUTO -->
+        <div id="pesquisarProduto" class="card hidden">
+            <h4>Pesquisar Produto</h4>
+            <input id="codigoPesquisar" class="form-control mb-2" placeholder="Código">
+            <button class="btn btn-info btn-custom" onclick="buscarProduto()">Buscar</button>
+            <div id="resultadoBusca" class="mt-3"></div>
+            <button class="btn btn-secondary btn-custom" onclick="mostrar('menuPrincipal')">Voltar</button>
+        </div>
+
+        <!-- CADASTRAR FUNCIONÁRIO -->
+        <div id="cadastrarFuncionario" class="card hidden">
+            <h4>Cadastrar Funcionário</h4>
+            <input id="nomeFuncionario" class="form-control mb-2" placeholder="Nome">
+            <input id="telefoneFuncionario" class="form-control mb-2" placeholder="Telefone">
+            <input id="salarioFuncionario" type="number" class="form-control mb-2" placeholder="Salário">
+            <input id="funcaoFuncionario" class="form-control mb-2" placeholder="Função">
+            <button class="btn btn-success btn-custom" onclick="salvarFuncionario()">Salvar</button>
+            <button class="btn btn-secondary btn-custom" onclick="mostrar('menuPrincipal')">Voltar</button>
+        </div>
+    </div>
+
+    <script>
+        const produtos = [];
+        const funcionarios = [];
+        const pedidos = [];
+
+        function mostrar(id) {
+            document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function voltarMenu() {
+            mostrar('menuPrincipal');
+        }
+
+        function alternarEntrega() {
+            const tipo = document.getElementById('tipoEntrega').value;
+            document.getElementById('entregaPresencial').classList.toggle('hidden', tipo !== 'Presencial');
+            document.getElementById('entregaEndereco').classList.toggle('hidden', tipo !== 'Entrega');
+        }
+
+        // Produto
+        function salvarProduto() {
+            const p = {
+                codigo: document.getElementById('codigoProduto').value,
+                descricao: document.getElementById('descricaoProduto').value,
+                preco: +document.getElementById('precoProduto').value,
+                validade: document.getElementById('validadeProduto').value,
+                quantidade: +document.getElementById('quantidadeProduto').value
+            };
+            produtos.push(p);
+            alert('Produto cadastrado!');
+            voltarMenu();
+        }
+
+        function removerProduto() {
+            const c = document.getElementById('codigoRemover').value;
+            const idx = produtos.findIndex(x => x.codigo === c);
+            if (idx >= 0) { produtos.splice(idx, 1); alert('Removido!'); }
+            else alert('Produto não existe');
+            voltarMenu();
+        }
+
+        function buscarProduto() {
+            const c = document.getElementById('codigoPesquisar').value;
+            const p = produtos.find(x => x.codigo === c);
+            document.getElementById('resultadoBusca').innerHTML = p
+                ? `<p>${p.descricao} — R$${p.preco.toFixed(2)} — Qtd: ${p.quantidade}</p>`
+                : '<p class="text-danger">Não encontrado.</p>';
+        }
+
+        // Funcionário
+        function salvarFuncionario() {
+            const f = {
+                nome: document.getElementById('nomeFuncionario').value,
+                telefone: document.getElementById('telefoneFuncionario').value,
+                salario: +document.getElementById('salarioFuncionario').value,
+                funcao: document.getElementById('funcaoFuncionario').value
+            };
+            funcionarios.push(f);
+            alert('Funcionário cadastrado!');
+            voltarMenu();
+        }
+
+        function abrirPedido() {
+            const nome = document.getElementById('nomeCliente').value;
+            const telefone = document.getElementById('telefoneCliente').value;
+            const tipo = document.getElementById('tipoEntrega').value;
+
+            if (!nome || !telefone || !tipo) {
+                return alert('Preencha todos os campos!');
+            }
+
+            const pedido = {
+                id: pedidos.length + 1,
+                cliente: { nome, telefone },
+                tipo,
+                local: {},
+                itens: []
+            };
+
+            if (tipo === 'Presencial') {
+                const mesa = +document.getElementById('numeroMesa').value;
+                if (!mesa) return alert('Informe o número da mesa!');
+
+                const mesaOcupada = pedidos.some(p => p.tipo === 'Presencial' && p.local.mesa === mesa);
+                if (mesaOcupada) return alert(`A mesa ${mesa} já está ocupada!`);
+
+                pedido.local = { mesa };
+            } else {
+                pedido.local = {
+                    cep: document.getElementById('cep').value,
+                    rua: document.getElementById('rua').value,
+                    numero: document.getElementById('numero').value,
+                    complemento: document.getElementById('complemento').value,
+                    bairro: document.getElementById('bairro').value,
+                    cidade: document.getElementById('cidade').value
+                };
+            }
+
+            pedidos.push(pedido);
+            alert(`Pedido #${pedido.id} aberto!`);
+            voltarMenu();
+        }
+
+
+        function adicionarItem() {
+            const pc = +document.getElementById('pedidoItemCod').value;
+            const pr = document.getElementById('produtoItemCod').value;
+            const qt = +document.getElementById('produtoItemQtd').value;
+
+            const pe = pedidos.find(x => x.id === pc);
+            const prd = produtos.find(x => x.codigo === pr);
+
+            if (!pe) return alert('Pedido não existe!');
+            if (!prd) return alert('Produto não existe!');
+            if (qt <= 0) return alert('Quantidade inválida!');
+
+            pe.itens.push({ descricao: prd.descricao, preco: prd.preco, quantidade: qt, total: prd.preco * qt });
+            alert('Item adicionado!');
+            voltarMenu();
+        }
+
+        function removerItem() {
+            const pc = +document.getElementById('pedidoRemItemCod').value;
+            const idx = +document.getElementById('itemRemIndex').value - 1;
+            const pe = pedidos.find(x => x.id === pc);
+
+            if (!pe) return alert('Pedido não existe!');
+            if (idx < 0 || idx >= pe.itens.length) return alert('Índice inválido!');
+
+            pe.itens.splice(idx, 1);
+            alert('Item removido!');
+            voltarMenu();
+        }
+
+        function listarItens() {
+            const pc = +document.getElementById('pedidoListarCod').value;
+            const pe = pedidos.find(x => x.id === pc);
+            const out = document.getElementById('listaItensResultado');
+
+            if (!pe) return out.innerHTML = '<p class="text-danger">Pedido não existe!</p>';
+            if (pe.itens.length === 0) return out.innerHTML = '<p>Sem itens.</p>';
+
+            out.innerHTML = pe.itens.map((it, i) =>
+                `<p>Item ${i + 1}: ${it.descricao} — R$${it.preco.toFixed(2)} x${it.quantidade} = R$${it.total.toFixed(2)}</p>`
+            ).join('');
+            mostrar('listarItens');
+        }
+
+        function emitirNotaFiscal() {
+            const pc = +document.getElementById('codigoPedidoNota').value;
+            const pe = pedidos.find(x => x.id === pc);
+            if (!pe) return alert('Pedido não existe!');
+            const total = pe.itens.reduce((s, a) => s + a.total, 0);
+            alert(`🧾 Nota Fiscal para pedido #${pe.id}\nCliente: ${pe.cliente.nome}\nTotal: R$${total.toFixed(2)}`);
+            voltarMenu();
+        }
+    </script>
+    <!-- Code injected by live-server -->
+    <script>
+        // <![CDATA[  <-- For SVG support
+        if ('WebSocket' in window) {
+            (function () {
+                function refreshCSS() {
+                    var sheets = [].slice.call(document.getElementsByTagName("link"));
+                    var head = document.getElementsByTagName("head")[0];
+                    for (var i = 0; i < sheets.length; ++i) {
+                        var elem = sheets[i];
+                        var parent = elem.parentElement || head;
+                        parent.removeChild(elem);
+                        var rel = elem.rel;
+                        if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+                            var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+                            elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+                        }
+                        parent.appendChild(elem);
+                    }
+                }
+                var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+                var address = protocol + window.location.host + window.location.pathname + '/ws';
+                var socket = new WebSocket(address);
+                socket.onmessage = function (msg) {
+                    if (msg.data == 'reload') window.location.reload();
+                    else if (msg.data == 'refreshcss') refreshCSS();
+                };
+                if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+                    console.log('Live reload enabled.');
+                    sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+                }
+            })();
+        }
+        else {
+            console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+        }
+        // ]]>
+    </script>
+</body>
+
+</html>

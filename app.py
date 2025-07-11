@@ -47,13 +47,25 @@ def menu_pedido():
 
 def pedido_adicionar():
     """
-    Cria um novo pedido com um endereço fornecido pelo usuário.
+    Cria um novo pedido com base na escolha de entrega do usuário.
+
+    Esta função realiza as seguintes etapas:
+    1. Gera automaticamente um código para o novo pedido com base na quantidade atual de pedidos.
+    2. Solicita o cadastro de um cliente por meio da função `cadastrar_cliente()`.
+    3. Pergunta ao usuário qual a modalidade de entrega desejada:
+        - [1] Presencial: o cliente escolhe uma mesa através da função `cadastrar_mesa()`.
+        - [2] Entrega: o cliente fornece um endereço através da função `cadastrar_endereco()`.
+    4. Caso o usuário escolha uma opção inválida, a função imprime uma mensagem de erro e retorna `None`.
+    5. Retorna um objeto `Pedido` com os dados coletados: código, cliente, tipo de entrega e local.
 
     Returns:
-        Pedido: Um objeto da classe Pedido com código gerado automaticamente.
+        Pedido | None: Um objeto da classe `Pedido` com os dados preenchidos,
+                       ou `None` se a opção escolhida for inválida.
+
     """
+
     # Gera o código do pedido automaticamente com base na quantidade atual de pedidos
-    codido_pedido = len(pedidos) + 1
+    codigo_pedido = len(pedidos) + 1
 
     # Cadastra o cliente
     cliente_pedido = cadastrar_cliente()
@@ -78,7 +90,7 @@ def pedido_adicionar():
         print("Opção inválida. Pedido não será criado.")
         return None
 
-    return Pedido(codido_pedido, cliente_pedido, tipo_entrega, local)
+    return Pedido(codigo_pedido, cliente_pedido, tipo_entrega, local)
 
 
 def pedido_adicionar_item():
@@ -209,10 +221,23 @@ def remover_produto():
     pelo usuário. Exibe mensagem com a descrição do produto removido.
     """
 
-    int_codigo_remocao = int(input('Informe o código do produto para remoção: '))
-    produto_remover = estoque_produtos[int_codigo_remocao]
-    print("Produto (" + produto_remover._descricao + ") removido!") 
-    del estoque_produtos[int_codigo_remocao]
+    try:
+        int_codigo_remocao = int(input('Informe o código do produto para remoção: '))
+    except ValueError:
+        print("Erro: o código deve ser um número inteiro.")
+        return
+
+    if int_codigo_remocao not in estoque_produtos:
+        print(f"Erro: código {int_codigo_remocao} não encontrado no estoque.")
+        return
+
+    try:
+        produto_remover = estoque_produtos[int_codigo_remocao]
+        print(f"Produto ({produto_remover._descricao}) removido!")
+        del estoque_produtos[int_codigo_remocao]
+    except Exception as e:
+        print(f"Erro inesperado ao remover o produto: {e}")
+
 
 def buscar_produto_por_codigo(int_codigo_produto):
     """
@@ -250,7 +275,18 @@ def buscar_pedido_por_codigo(int_codigo_pedido):
 
 
 def cadastrar_funcionario():
+    """
+    Solicita os dados de um funcionário via entrada do usuário e retorna um objeto da classe Funcionario.
 
+    Solicita ao usuário que informe:
+    - Nome (str)
+    - Telefone (int)
+    - Salário (float)
+    - Função (str)
+
+    Returns:
+        Funcionario: Um objeto da classe Funcionario com os dados informados.
+    """
     str_nome = str(input('Qual o nome do funcionário: '))
     int_telefone = int(input('Informe o telefone do funcionário: '))
     float_salario = float(input('Informe o salário do funcionário: '))
@@ -259,6 +295,29 @@ def cadastrar_funcionario():
 
     
 def emitir_nota_fiscal():
+
+    """
+    Emite uma nota fiscal com base em um pedido identificado pelo código informado pelo usuário.
+
+    O processo consiste em:
+    - Solicitar ao usuário o código de um pedido.
+    - Buscar o pedido através da função `buscar_pedido_por_codigo`.
+    - Verificar se o pedido existe.
+    - Calcular o preço total do pedido.
+    - Gerar a data e hora atual formatada.
+    - Criar um objeto da classe NotaFiscal com os dados.
+    - Exibir a nota fiscal no console.
+
+    Returns:
+        NotaFiscal: Um objeto representando a nota fiscal emitida.
+        None: Caso o pedido não seja encontrado.
+
+    Observações:
+        - A função depende da existência das funções/classes: `buscar_pedido_por_codigo`, `pedido.calcular_preco_total()` e `NotaFiscal`.
+        - A classe `NotaFiscal` deve aceitar como parâmetros o código do pedido, o valor total e a data/hora da emissão.
+        - A biblioteca `datetime` deve estar importada (`from datetime import datetime`).
+    """
+
     int_codigo_pedido = int(input('Digite o código do pedido: '))
     pedido = buscar_pedido_por_codigo(int_codigo_pedido)
     
@@ -266,11 +325,11 @@ def emitir_nota_fiscal():
         print("Pedido não encontrado.")
         return None
 
-    precoFinal = pedido.calcular_preco_total()  # <-- agora sim
+    precoFinal = pedido.calcular_preco_total()  
     data = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     
     nota = NotaFiscal(int_codigo_pedido, precoFinal, data)
-    print(f"Nota Fiscal emitida para o pedido {int_codigo_pedido} no valor de R$ {precoFinal:.2f}")
+    print(f"Nota Fiscal emitida para o pedido {int_codigo_pedido} no valor de R$ {precoFinal:.2f} e data {data}.")
     return nota
 
 
